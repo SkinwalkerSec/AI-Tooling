@@ -1,0 +1,4 @@
+flask>=3.0
+requests>=2.31
+# Only needed when LLM_PROVIDER=anthropic:
+# anthropic>=0.40

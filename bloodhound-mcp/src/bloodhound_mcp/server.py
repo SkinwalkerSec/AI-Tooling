@@ -24,8 +24,12 @@ mcp = MCPServer("bloodhound-mcp")
 
 _driver = None
 
+# Blocked in the read path: write keywords, plus LOAD CSV and apoc procedures,
+# which are technically reads but let a query touch the filesystem / make
+# outbound requests (file:// local read, http:// SSRF). A read transaction
+# alone would not stop those.
 _WRITE_KEYWORDS = re.compile(
-    r"\b(CREATE|MERGE|DELETE|DETACH|SET|REMOVE|DROP|CALL\s+apoc\.)\b",
+    r"\b(CREATE|MERGE|DELETE|DETACH|SET|REMOVE|DROP|LOAD\s+CSV|CALL\s+apoc\.)\b",
     re.IGNORECASE,
 )
 
@@ -54,7 +58,8 @@ async def _run_read(query: str, parameters: dict | None = None) -> list[dict]:
     if _WRITE_KEYWORDS.search(query):
         raise ValueError(
             "This tool only runs read queries. Write keywords "
-            "(CREATE/MERGE/DELETE/SET/REMOVE/DROP) are rejected."
+            "(CREATE/MERGE/DELETE/SET/REMOVE/DROP) and filesystem/network "
+            "keywords (LOAD CSV, apoc procedures) are rejected."
         )
     driver = _get_driver()
     async with driver.session() as session:
@@ -71,8 +76,9 @@ async def run_cypher(query: str, parameters: dict | None = None) -> list[dict]:
     Run a read-only Cypher query against the BloodHound Neo4j database.
 
     Rejected if the query contains write keywords (CREATE, MERGE, DELETE,
-    SET, REMOVE, DROP). Use for ad-hoc graph exploration beyond the
-    canned queries below.
+    SET, REMOVE, DROP) or filesystem/network keywords (LOAD CSV, apoc
+    procedures). Use for ad-hoc graph exploration beyond the canned queries
+    below.
     """
     return await _run_read(query, parameters)
 

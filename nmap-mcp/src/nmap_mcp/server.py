@@ -2,8 +2,11 @@
 nmap-mcp: an MCP server exposing nmap scans as tools.
 
 Shells out to the real `nmap` binary (no shell=True, arguments passed as a
-list, so nothing in a target/port string can inject extra flags) and parses
-its XML output into structured results.
+list, so nothing in a target/port string can ever reach a shell). Targets are
+validated before use -- rejected if empty, containing whitespace, or starting
+with '-' -- so a target string can't be smuggled in as an extra nmap option
+either, even when the scope guard below is disabled. Output is parsed from
+nmap's XML into structured results.
 
 Scope is enforced: if NMAP_ALLOWED_CIDR is set, every target is checked
 against it before nmap ever runs. Hostnames are resolved and the resolved
@@ -14,6 +17,7 @@ where you don't need the guardrail.
 import asyncio
 import ipaddress
 import os
+import re
 import socket
 import xml.etree.ElementTree as ET
 
@@ -32,6 +36,37 @@ def _allowed_networks() -> list[ipaddress.IPv4Network | ipaddress.IPv6Network]:
     if not raw:
         return []
     return [ipaddress.ip_network(cidr.strip(), strict=False) for cidr in raw.split(",")]
+
+
+def _validate_target(target: str) -> None:
+    """Reject targets that could be parsed by nmap as options, not hosts.
+
+    Runs regardless of NMAP_ALLOWED_CIDR, so it also protects labs that
+    deliberately leave the scope guard off. Valid IPs, hostnames, and CIDRs
+    never start with '-' or contain whitespace.
+    """
+    if not target or not target.strip():
+        raise ValueError("target must not be empty")
+    if target != target.strip() or any(ch.isspace() for ch in target):
+        raise ValueError(f"target {target!r} must not contain whitespace")
+    if target.startswith("-"):
+        raise ValueError(
+            f"target {target!r} must not start with '-' "
+            "(it would be read as an nmap option, not a host)"
+        )
+
+
+def _validate_ports(ports: str) -> None:
+    """Allow only characters that appear in an nmap port spec."""
+    if ports != ports.strip() or any(ch.isspace() for ch in ports):
+        raise ValueError(f"ports {ports!r} must not contain whitespace")
+    if ports.startswith("-"):
+        raise ValueError(f"ports {ports!r} must not start with '-'")
+    if not re.fullmatch(r"[0-9A-Za-z,:*\-]+", ports):
+        raise ValueError(
+            f"ports {ports!r} may only contain digits, commas, ranges, "
+            "and protocol prefixes (e.g. \"22,80,443\", \"1-1024\", \"U:53,T:80\")"
+        )
 
 
 def _resolve(target: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address:
@@ -143,6 +178,7 @@ async def host_discovery(target: str) -> list[dict]:
     Find which hosts are up in a target range, without port scanning them.
     target: a single IP, hostname, or CIDR range (e.g. "10.10.10.0/24").
     """
+    _validate_target(target)
     _check_scope(target)
     root = await _run_nmap(["-sn", target])
     return _parse_hosts(root)
@@ -154,6 +190,7 @@ async def quick_scan(target: str) -> list[dict]:
     Fast scan of the 100 most common ports (TCP connect scan, no root
     required). Good first pass before a full port_scan.
     """
+    _validate_target(target)
     _check_scope(target)
     root = await _run_nmap(["-sT", "-T4", "-F", target])
     return _parse_hosts(root)
@@ -167,6 +204,9 @@ async def port_scan(target: str, ports: str | None = None, service_detection: bo
     "1-1024") to narrow or widen it. service_detection runs -sV to
     identify service names/versions on open ports.
     """
+    _validate_target(target)
+    if ports:
+        _validate_ports(ports)
     _check_scope(target)
     args = ["-sT", "-T4"]
     if service_detection:
@@ -186,6 +226,7 @@ async def os_detection(target: str) -> list[dict]:
     isn't privileged, this will raise a clear error rather than silently
     doing a normal scan.
     """
+    _validate_target(target)
     _check_scope(target)
     root = await _run_nmap(["-O", target])
     return _parse_hosts(root)

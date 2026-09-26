@@ -23,6 +23,14 @@ Each is an independent Python project with its own `pyproject.toml`, README, and
   into a shell ([`code_injection.md`](insecure-output/code_injection.md)). Payloads, worked
   reflected/stored scenarios, and a practice app (LLMShip) with a built-in exfil listener and a
   probe script.
+- [`function-calling/`](function-calling/): function-calling and tool-use abuse (OWASP LLM05
+  Improper Output Handling and LLM06 Excessive Agency): insecure eval/exec of model output,
+  excessive agency, and vulnerable backend functions, with a payload bank, technique detail, and
+  references.
+- [`exfiltration-attacks/`](exfiltration-attacks/): data exfiltration via LLM output (OWASP LLM02
+  Insecure Output Handling), driven by indirect prompt injection (OWASP LLM01): Markdown-image
+  beacons that leak conversation history, retrieved documents, and other users' data to an
+  attacker listener, with a payload bank, technique detail, and references.
 
 ## Authorized use only
 

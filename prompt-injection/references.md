@@ -34,7 +34,7 @@ Reading and tooling for system-prompt extraction and prompt injection.
 - NVIDIA garak (LLM vulnerability scanner): https://github.com/NVIDIA/garak
 - Microsoft PyRIT (Python Risk Identification Toolkit): https://github.com/Azure/PyRIT
 - promptmap (prompt injection tester): https://github.com/utkusen/promptmap
-- promptfoo (eval and red-team harness): https://github.com/promptfoo/promptfoo
+- promptfoo (eval and adversarial-testing harness): https://github.com/promptfoo/promptfoo
 
 ## Commentary
 

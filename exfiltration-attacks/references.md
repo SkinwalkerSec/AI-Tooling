@@ -31,7 +31,7 @@ delivery, and the Markdown / rendering behaviour that makes the beacon fire.
 
 - NVIDIA garak (LLM vulnerability scanner): https://github.com/NVIDIA/garak
 - Microsoft PyRIT (Python Risk Identification Toolkit): https://github.com/Azure/PyRIT
-- promptfoo (LLM eval and red-team harness): https://github.com/promptfoo/promptfoo
+- promptfoo (LLM eval and adversarial-testing harness): https://github.com/promptfoo/promptfoo
 - Interactsh (out-of-band interaction listener): https://github.com/projectdiscovery/interactsh
 - `python3 -m http.server` for a quick beacon host and request log
 

@@ -1,6 +1,6 @@
 # AI-Tooling
 
-Red-team tooling and reference material for AI systems.
+Offensive security tooling and reference material for AI systems.
 
 ## MCP servers
 

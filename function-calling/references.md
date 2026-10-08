@@ -39,7 +39,7 @@ and vulnerable backend functions.
 
 - NVIDIA garak (LLM vulnerability scanner): https://github.com/NVIDIA/garak
 - Microsoft PyRIT (Python Risk Identification Toolkit): https://github.com/Azure/PyRIT
-- promptfoo (LLM eval and red-team harness): https://github.com/promptfoo/promptfoo
+- promptfoo (LLM eval and adversarial-testing harness): https://github.com/promptfoo/promptfoo
 - OWASP Web Security Testing Guide, SQL injection testing:
   https://owasp.org/www-project-web-security-testing-guide/
 

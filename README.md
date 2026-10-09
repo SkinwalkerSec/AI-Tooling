@@ -31,9 +31,11 @@ Each is an independent Python project with its own `pyproject.toml`, README, and
   Insecure Output Handling), driven by indirect prompt injection (OWASP LLM01): Markdown-image
   beacons that leak conversation history, retrieved documents, and other users' data to an
   attacker listener, with a payload bank, technique detail, and references.
-- [`data-poisoning/`](data-poisoning/): training-data poisoning (OWASP LLM03) — a concise,
-  step-by-step methodology for label flipping, with a minimal reusable Python snippet and a
-  pre-engagement checklist.
+- [`data-poisoning/`](data-poisoning/): training-data poisoning (OWASP LLM03): generic
+  [label flipping](data-poisoning/label_flipping.md) (random degradation) and
+  [targeted label flipping](data-poisoning/targeted_label_flipping.md) (selective
+  class-specific blindness while keeping overall accuracy high), each with a step-by-step
+  methodology, reusable Python snippet, and pre-engagement checklist.
 
 ## Authorized use only
 

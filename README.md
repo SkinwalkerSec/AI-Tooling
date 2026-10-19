@@ -14,7 +14,7 @@ Each is an independent Python project with its own `pyproject.toml`, README, and
 
 ## Reference material
 
-- [`mcp-exploitation/`](mcp-exploitation/): attacking the server side of an MCP deployment — the
+- [`mcp-exploitation/`](mcp-exploitation/): attacking the server side of an MCP deployment, the
   tools and resources a server exposes. A COAE quick-reference methodology
   ([`methodology.md`](mcp-exploitation/methodology.md)): recon-first enumeration with `fastmcp`,
   a cheapest-first vulnerability-class checklist, playbooks for SQL injection, command injection,
